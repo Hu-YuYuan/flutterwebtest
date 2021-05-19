@@ -6,7 +6,7 @@ const RESOURCES = {
   "version.json": "1ece10f5a2dc304eb12eae527156ee67",
 "index.html": "d1292b7b24c68e3a48ccabdaa89fd132",
 "/": "d1292b7b24c68e3a48ccabdaa89fd132",
-"main.dart.js": "b7272cb1bfaa66eaddf48eaea8aec850",
+"main.dart.js": "a7e32c68ce32e849da3b12ebcb0b960b",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
@@ -19,7 +19,7 @@ const RESOURCES = {
 "assets/images/ydbg_call_list_ic_mail@3x.png": "629e53a45a05dbf199f0ae1406470b09",
 "assets/images/ydbg_loading_16_iOS@3x.png": "30d04bf4b516ee64ade1fe597eed02d4",
 "assets/AssetManifest.json": "dd4f1cdd0d06ff9bca85a6f58a4004e7",
-"assets/NOTICES": "f6ed8d3addc75b75c66fb388013df2f1",
+"assets/NOTICES": "c5710952d5da512e4692f954c2c59838",
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "6d342eb68f170c97609e9da345464e5e",
 "assets/fonts/MaterialIcons-Regular.otf": "1288c9e28052e028aba623321f7826ac"
