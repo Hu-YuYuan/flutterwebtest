@@ -4,6 +4,44 @@
   <meta charset="UTF-8">
 </head>
 <body>
+<script>
+  function testJs() {
+    jsSuccess('token');
+  }
+
+  function getAccessToken() {
+      console.log('call getAccessToken')
+      let param
+      param = {
+        backid: 'accessTokenCallback',
+        backFunc: 'accessTokenCallback',
+      }
+
+      if (window.WebContainer && window.WebContainer.feixinGetAccessToken) {
+        window.WebContainer.feixinGetAccessToken(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.feixinGetAccessToken
+      ) {
+        window.webkit.messageHandlers.feixinGetAccessToken.postMessage(param)
+      } else {
+        // this.isShowView = true;
+        //没有accesstoken 则走token流程
+        // console.log('不支持 accesstoken 认证，走端外单点登陆')
+        // this.getToken()
+        console.log('getAccessToken failure')
+      }
+    }
+
+    // 获取token回调
+    function accessTokenCallback(res) {
+      console.log('getAccessToken' + res)
+      getAccessTokenSuccess(res)
+    }
+
+</script>
+
 <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>
