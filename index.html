@@ -5,10 +5,6 @@
 </head>
 <body>
 <script>
-  function testJs() {
-    jsSuccess('token');
-  }
-
   function getAccessToken() {
       console.log('call getAccessToken')
       let param
@@ -32,7 +28,27 @@
         // this.getToken()
         console.log('getAccessToken failure')
       }
-    }
+   }
+
+   function getInfo() {
+          console.log('call getinfo func')
+          let param = {
+            backid: 'getUserInfo',
+          }
+          if (window.WebContainer && window.WebContainer.getUserInfo) {
+            window.WebContainer.getUserInfo(JSON.stringify(param))
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.feixinGetCurrentUserInfo
+          ) {
+            window.webkit.messageHandlers.feixinGetCurrentUserInfo.postMessage(
+              param
+            )
+          } else {
+            console.log('No native APIs found.')
+          }
+   }
 
 </script>
 
