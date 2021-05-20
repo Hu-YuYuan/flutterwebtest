@@ -15403,11 +15403,12 @@ T4:function T4(){},
 abj:function(a,b,c){K.bl(a)
 c>0
 return b},
-a8A:function(){var s=$.Sq
-if(null==s){s=new D.rm()
-s.AS()
-s.AR()
-$.Sq=s}return B.ak6("application/json; charset=utf-8",P.aA(["Authorization","Bearer 29cb54790a784edb848a2d491540237d"],t.N,t.z))},
+a8A:function(){var s,r=$.Sq
+if(null==r){r=new D.rm()
+r.AS()
+r.AR()
+$.Sq=r}s=r.a
+return B.ak6("application/json; charset=utf-8",P.aA(["Authorization","Bearer "+(s==null?"":s)],t.N,t.z))},
 VC:function(a){var s=0,r=P.a1(t.y),q,p,o,n,m,l
 var $async$VC=P.Y(function(b,c){if(b===1)return P.Z(c,r)
 while(true)switch(s){case 0:l=Q.r7().u5()
@@ -16778,7 +16779,7 @@ a1O:function a1O(a){this.a=a},
 a1P:function a1P(a){this.a=a},
 a1Q:function a1Q(a,b){this.a=a
 this.b=b},
-rm:function rm(){this.c=null},
+rm:function rm(){this.c=this.a=null},
 Dw:function Dw(){},
 afh:function(a,b){var s=H.b(a.split("\n"),t.s)
 $.Lc().I(0,s)
@@ -57471,7 +57472,7 @@ $S:20}
 Y.eN.prototype={
 ia:function(){return Y.abS(H.A(this),this,H.o(this).j("eN.T"))}}
 F.B0.prototype={
-S:function(a,b){return new S.rJ(new F.rY(null),N.aif(),"Flutter Demo666",X.add(null,C.rc),null)}}
+S:function(a,b){return new S.rJ(new F.rY(null),N.aif(),"Flutter Demo668",X.add(null,C.rc),null)}}
 F.rY.prototype={
 aD:function(){return new F.Hf(C.m)}}
 F.Hf.prototype={
@@ -57761,8 +57762,8 @@ case 1:return P.a_(q,r)
 case 2:return P.Z(o,r)}})
 return P.a0($async$mf,r)}}
 D.rm.prototype={
-KI:function(a){if(a.length>0)P.bH("\u7528\u6237\u7684token: "+a)
-else P.bH("\u7528\u6237\u7684token\u4e3a\u7a7a")},
+KI:function(a){if(a.length>0){P.bH("\u7528\u6237\u7684token: "+a)
+this.a=a}else P.bH("\u7528\u6237\u7684token\u4e3a\u7a7a")},
 L1:function(a){var s=J.ak(a)
 if(s.gl(a)>0){P.bH("\u7528\u6237\u7684\u540d\u5b57: "+H.c(s.h(a,"name")))
 s.h(a,"name")
