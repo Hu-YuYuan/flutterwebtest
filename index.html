@@ -26,6 +26,7 @@
         //没有accesstoken 则走token流程
         // console.log('不支持 accesstoken 认证，走端外单点登陆')
         // this.getToken()
+        console.log('No native APIs found.')
         console.log('getAccessToken failure')
       }
    }
@@ -50,6 +51,7 @@
             )
           } else {
             console.log('No native APIs found.')
+            console.log('getInfo failure')
           }
    }
 
