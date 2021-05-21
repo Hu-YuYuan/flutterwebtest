@@ -29,13 +29,12 @@
         console.log('No native APIs found.')
         console.log('getAccessToken failure')
       }
-   }
+   },
 
    function getInfo() {
           console.log('call getinfo func')
           let param = {
             backid: 'getUserInfo',
-            backFunc: 'getUserInfo',
           }
           if (window.WebContainer && window.WebContainer.getUserInfo) {
             window.WebContainer.getUserInfo(JSON.stringify(param))
@@ -53,7 +52,30 @@
             console.log('No native APIs found.')
             console.log('getInfo failure')
           }
-   }
+   },
+
+    function getUserInfo(info) {
+          console.log('获取用户信息成功')
+          console.log(info)
+          if (window.WebContainer && window.WebContainer.getUserInfo) {
+            let userName = JSON.parse(info).name
+            let userPhone = JSON.parse(info).phone
+            getUserInfoSuccess(userName, userPhone)
+          } else if (window.WebContainer && window.WebContainer.feixinGetCurrentUserInfo) {
+            let userName = JSON.parse(info).name
+            let userPhone = JSON.parse(info).phone
+            getUserInfoSuccess(userName, userPhone);
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.feixinGetCurrentUserInfo
+          ) {
+            let userName = info.name
+            let userPhone = info.phone
+            getUserInfoSuccess(userName, userPhone);
+          }
+        }
+
 
 </script>
 
