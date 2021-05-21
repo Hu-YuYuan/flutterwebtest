@@ -16779,7 +16779,7 @@ a1O:function a1O(a){this.a=a},
 a1P:function a1P(a){this.a=a},
 a1Q:function a1Q(a,b){this.a=a
 this.b=b},
-nq:function nq(){this.b=this.a=null},
+nq:function nq(){this.c=this.b=this.a=null},
 Dx:function Dx(){},
 afi:function(a,b){var s=H.b(a.split("\n"),t.s)
 $.Ld().I(0,s)
@@ -57472,7 +57472,7 @@ $S:19}
 Y.eN.prototype={
 ia:function(){return Y.abT(H.A(this),this,H.o(this).j("eN.T"))}}
 F.B1.prototype={
-S:function(a,b){return new S.rK(new F.rZ(null),N.aig(),"Flutter Demo333",X.ade(null,C.rc),null)}}
+S:function(a,b){return new S.rK(new F.rZ(null),N.aig(),"Flutter Demo666",X.ade(null,C.rc),null)}}
 F.rZ.prototype={
 aD:function(){return new F.Hg(C.m)}}
 F.Hg.prototype={
@@ -57545,15 +57545,17 @@ O.X3.prototype={
 $0:function(){this.a.Yz()},
 $S:0}
 O.X4.prototype={
-$0:function(){var s=$.rn
-if(null==s){s=new D.nq()
-s.zj()
-s.zk()
-$.rn=s}s=s.b
+$0:function(){var s,r=$.rn
+if(null==r){r=new D.nq()
+r.zj()
+r.zk()
+$.rn=r}s=r.b
 if(s!=null){s.toString
-T.a9X(s)}else T.a9X("\u83b7\u53d6\u7528\u6237\u4fe1\u606f\u5931\u8d25")
-s=V.a8h(new O.X1(),null,t.z)
-K.TD(this.a).p0(s)},
+r=r.c
+r.toString
+T.a9X(s+r)}else T.a9X("\u83b7\u53d6\u7528\u6237\u4fe1\u606f\u5931\u8d25")
+r=V.a8h(new O.X1(),null,t.z)
+K.TD(this.a).p0(r)},
 $S:0}
 O.X1.prototype={
 $1:function(a){return M.a8C(new O.ue(null),!1)},
@@ -57772,7 +57774,8 @@ return P.a0($async$mf,r)}}
 D.nq.prototype={
 KI:function(a){if(a.length>0){P.bX("\u7528\u6237\u7684token: "+a)
 this.a=a}else P.bX("\u7528\u6237\u7684token\u4e3a\u7a7a")},
-L1:function(a,b){this.b=a},
+L1:function(a,b){this.b=a
+this.c=b},
 zk:function(){var s=$.Lc()
 s.m(0,"accessTokenCallback",this.gKH())
 s.xP("getAccessToken")
