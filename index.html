@@ -38,6 +38,8 @@
           }
           if (window.WebContainer && window.WebContainer.getUserInfo) {
             window.WebContainer.getUserInfo(JSON.stringify(param))
+          } else if (window.WebContainer && window.WebContainer.feixinGetCurrentUserInfo) {
+            window.WebContainer.feixinGetCurrentUserInfo(JSON.stringify(param))
           } else if (
             window.webkit &&
             window.webkit.messageHandlers &&
