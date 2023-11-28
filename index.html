@@ -2,8 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+        this.globalThis || (this.globalThis = this)
+  </script>
+  <script src="vconsole.min.js"></script>
+  <script>
+   var vConsole = new VConsole();
+  </script>
+  <script src="platform.js"></script>
+  <script type="text/javascript">
+  let ua = navigator.userAgent.toLowerCase();
+  var ver = ua.match(/cpu iphone os (.*?) like mac os/);
+  console.log("打包时间：2023-11-28 08：40");
+  if(ver) {
+    if (ver[1].indexOf('15_0') != -1) {
+      console.log("当前的系统版本为iOS15.0.X");
+      window.flutterWebRenderer = "canvaskit";
+      HTMLCanvasElement.prototype.getContext = function (orig) {
+      return function(type) {
+      return type !== "webgl2" ? orig.apply(this, arguments) : null
+    }
+    }
+
+    (HTMLCanvasElement.prototype.getContext)
+    } else {
+      window.flutterWebRenderer = "html";
+      console.log("当前的系统版本并非iOS15.0.X");
+    }
+  }
+  </script>
 </head>
 <body>
+<script src="main.dart.js?v=1.1.0" type="application/javascript"></script>
 <script>
   function getAccessToken() {
       console.log('call getAccessToken')
@@ -29,6 +59,50 @@
         console.log('No native APIs found.')
         console.log('getAccessToken failure')
       }
+   }
+
+   function changeHref(urlStr) {
+     window.location.href = urlStr
+   }
+
+   function getInnerToken() {
+      console.log('call getInnerToken')
+      let param
+      param = {
+        backid: 'innerTokenCallback',
+        backFunc: 'innerTokenCallback',
+        appId: '205a12bfef204413806962dfd2d6a706'
+        // appId: 'efdab1780be14044878c739df653f510'
+      }
+
+      if (window.WebContainer && window.WebContainer.ydbgGetInnerToken) {
+        window.WebContainer.ydbgGetInnerToken(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.ydbgGetInnerToken
+      ) {
+        window.webkit.messageHandlers.ydbgGetInnerToken.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('getInnerToken failure')
+      }
+   }
+
+   function innerTokenCallback(info) {
+     console.log('获取用户innerToken成功')
+          console.log(info)
+          if (window.WebContainer && window.WebContainer.ydbgGetInnerToken) {
+            let token = JSON.parse(info).data.token
+            getInnerTokenSuccess(token)
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.ydbgGetInnerToken
+          ) {
+            let token = info.data.token
+            getInnerTokenSuccess(token)
+          }
    }
 
    function getInfo() {
@@ -76,9 +150,439 @@
           }
     }
 
+    function chooseReceiver(orgId) {
+          console.log('call getSelectMembers func')
+          let param = {
+            backId: 'chooseReceiverCallback',
+            backFunc: 'chooseReceiverCallback',
+            orgid: orgId,
+            count: 1
+          }
+          if (window.WebContainer && window.WebContainer.selectmembers) {
+            window.WebContainer.selectmembers(JSON.stringify(param))
+          } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.selectmembers) {
+            window.webkit.messageHandlers.selectmembers.postMessage(param)
+          } else {
+            console.log('No native APIs found.')
+            console.log('getSelectMembers failure')
+      }
+   }
 
+    function chooseReceiverCallback(memberInfo) {
+          console.log('获取联系人选择器成功')
+          if (window.WebContainer && window.WebContainer.selectmembers) {
+            let persons = JSON.parse(memberInfo).result
+            chooseReceiverSuccess(persons)
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.selectmembers
+          ) {
+            let persons = memberInfo.result
+            chooseReceiverSuccess(persons)
+          }
+   }
+
+   function chooseCheckers(orgId, userNameListStr, userMobileListStr, userUidListStr) {
+          console.log('call getSelectMembers func')
+          let param = {
+            backId: 'chooseCheckersCallback',
+            backFunc: 'chooseCheckersCallback',
+            orgid: orgId,
+            count: 10
+          }
+          if (userNameListStr.length > 0) {
+            let userNames = userNameListStr.split(',')
+            let userMobiles = userMobileListStr.split(',')
+            let userUids = userUidListStr.split(',')
+            var userInfos = []
+            for (i = 0; i < userMobiles.length; i ++) {
+              let userName = userNames[i]
+              let userMobile = userMobiles[i]
+              let userUid = userUids[i]
+              userInfos.push({name: userName, mobile: userMobile, uid: userUid})
+            }
+            param = {
+              backId: 'chooseCheckersCallback',
+              backFunc: 'chooseCheckersCallback',
+              orgid: orgId,
+              count: 10,
+              selected: userInfos
+             }
+          }
+          console.log(param)
+          if (window.WebContainer && window.WebContainer.selectmembers) {
+            window.WebContainer.selectmembers(JSON.stringify(param))
+          } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.selectmembers) {
+            window.webkit.messageHandlers.selectmembers.postMessage(param)
+          } else {
+            console.log('No native APIs found.')
+            console.log('getSelectMembers failure')
+      }
+   }
+
+    function chooseCheckersCallback(memberInfo) {
+          console.log('获取联系人选择器成功')
+          if (window.WebContainer && window.WebContainer.selectmembers) {
+            let persons = JSON.parse(memberInfo).result
+            chooseCheckersSuccess(persons)
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.selectmembers
+          ) {
+            let persons = memberInfo.result
+            chooseCheckersSuccess(persons)
+          }
+   }
+
+   function getSelectDepartments(orgId) {
+          console.log('call getSelectDepartments func')
+          let param = {
+            backId: 'getSelectDepartmentsCallback',
+            backFunc: 'getSelectDepartmentsCallback',
+            orgid: orgId
+          }
+          if (window.WebContainer && window.WebContainer.selectdepartments) {
+            window.WebContainer.selectdepartments(JSON.stringify(param))
+          } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.selectdepartments) {
+            window.webkit.messageHandlers.selectdepartments.postMessage(param)
+          } else {
+            console.log('No native APIs found.')
+            console.log('getSelectDepartments failure')
+      }
+   }
+
+   function getSelectDepartmentsCallback(deptInfo) {
+          console.log('获取部门选择器成功')
+          if (window.WebContainer && window.WebContainer.selectdepartments) {
+             let deptList = JSON.parse(deptInfo).result
+             getSelectDepartmentsSuccess(deptList)
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.selectdepartments
+          ) {
+            let deptList = deptInfo.result
+            getSelectDepartmentsSuccess(deptList)
+          }
+   }
+
+   function changeTitle(title) {
+     document.title = title
+   }
+
+   function getEnterpriseStrengthState(currentEnterId) {
+     console.log('获取当前企业的增强版状态')
+     console.log(currentEnterId)
+     let param = {
+        backFunc: 'getEnterpriseStrengthStateCallback',
+        orgId: currentEnterId
+      }
+
+      if (window.WebContainer && window.WebContainer.ydbgGetEnterpriseStrengthState) {
+        window.WebContainer.ydbgGetEnterpriseStrengthState(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.ydbgGetEnterpriseStrengthState
+      ) {
+        window.webkit.messageHandlers.ydbgGetEnterpriseStrengthState.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('getEnterpriseStrengthState failure')
+        getEnterpriseStrengthStateSuccess(0)
+      }
+   }
+
+   function getEnterpriseStrengthStateCallback(info) {
+          console.log('获取当前企业的增强版状态成功')
+          console.log(info)
+          if (window.WebContainer && window.WebContainer.ydbgGetEnterpriseStrengthState) {
+            let state = JSON.parse(info).isStrong
+            getEnterpriseStrengthStateSuccess(state)
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.ydbgGetEnterpriseStrengthState
+          ) {
+            let state = info.isStrong
+            getEnterpriseStrengthStateSuccess(state)
+          }
+   }
+
+   function getCurrentAppId() {
+     console.log('获取当前应用的appId')
+     let param = {backFunc: 'getCurrentAppIdCallback'}
+
+      if (window.WebContainer && window.WebContainer.ydbgGetWorkAppId) {
+        window.WebContainer.ydbgGetWorkAppId(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.ydbgGetWorkAppId
+      ) {
+        window.webkit.messageHandlers.ydbgGetWorkAppId.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('getCurrentAppId failure')
+        getCurrentAppIdSuccess('')
+      }
+   }
+
+   function getCurrentAppIdCallback(info) {
+          console.log('获取当前应用的appId成功')
+          console.log(info)
+          if (typeof info != 'string') {
+            if (window.WebContainer && window.WebContainer.ydbgGetWorkAppId) {
+            let appId = JSON.parse(info).appId
+            getCurrentAppIdSuccess(appId)
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.ydbgGetWorkAppId
+          ) {
+            let appId = info.appId
+            getCurrentAppIdSuccess(appId)
+          }
+         } else {
+            getCurrentAppIdSuccess(info)
+         }
+   }
+
+   function closePage() {
+     if (window.WebContainer && window.WebContainer.closePage) {
+          window.WebContainer.closePage()
+       } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.closePage) {
+          window.webkit.messageHandlers.closePage.postMessage({})
+       } else {
+          console.log('No native APIs found.')
+          console.log('closePage failure')
+       }
+   }
+
+   function getCurrentAppVersion() {
+     console.log('获取当前App版本信息')
+     let ua = navigator.userAgent.toLowerCase()
+     console.log(ua)
+     let iOSVer = ua.match(/cpu iphone os (.*?) like mac os/);
+     if (iOSVer) {
+      let ver = ua.match(/appversion_(.*?);hbg/);
+      if (ver) {
+        console.log(ver)
+        getCurrentAppVersionSuccess(ver[1])
+      } else {
+        getCurrentAppVersionSuccess('3.2.6')
+      }
+     } else {
+      let ver = ua.match(/appversion_(.*?).*/);
+      if (ver) {
+        console.log(ver)
+        let verNew = ver[0].split('_')
+        getCurrentAppVersionSuccess(verNew[1])
+      } else {
+        getCurrentAppVersionSuccess('3.2.6')
+      }
+     }
+   }
+
+    function selectLeaders(orgId, userNameListStr, userMobileListStr, userUidListStr, selectedNameListStr, selectedMobileListStr, selectedUidListStr) {
+          console.log('call selectLeaders func')
+          let param = {
+            backId: 'selectLeadersCallback',
+            backFunc: 'selectLeadersCallback',
+            orgid: orgId,
+            count: 2000
+          }
+          if (userNameListStr.length > 0) {
+            let userNames = userNameListStr.split(',')
+            let userMobiles = userMobileListStr.split(',')
+            let userUids = userUidListStr.split(',')
+            var userInfos = []
+            for (i = 0; i < userMobiles.length; i ++) {
+              let userName = userNames[i]
+              let userMobile = userMobiles[i]
+              let userUid = userUids[i]
+              userInfos.push({name: userName, mobile: userMobile, uid: userUid})
+            }
+            param = {
+              backId: 'selectLeadersCallback',
+              backFunc: 'selectLeadersCallback',
+              orgid: orgId,
+              count: userMobiles.length,
+              user: userInfos
+             }
+
+            if (selectedNameListStr.length > 0) {
+            let selectedNames = selectedNameListStr.split(',')
+            let selectedUserMobiles = selectedMobileListStr.split(',')
+            let selectedUids = selectedUidListStr.split(',')
+            var selectedUserInfos = []
+            for (i = 0; i < selectedUserMobiles.length; i ++) {
+              let selectedName = selectedNames[i]
+              let selectedMobile = selectedUserMobiles[i]
+              let selectedUid = selectedUids[i]
+              selectedUserInfos.push({name: selectedName, mobile: selectedMobile, uid: selectedUid})
+            }
+            param = {
+              backId: 'selectLeadersCallback',
+              backFunc: 'selectLeadersCallback',
+              orgid: orgId,
+              count: userMobiles.length,
+              user: userInfos,
+              selected: selectedUserInfos
+             }
+            }
+          }
+          console.log(param)
+          if (window.WebContainer && window.WebContainer.selectmembers) {
+            window.WebContainer.selectmembers(JSON.stringify(param))
+          } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.selectmembers) {
+            window.webkit.messageHandlers.selectmembers.postMessage(param)
+          } else {
+            console.log('No native APIs found.')
+            console.log('getSelectMembers failure')
+      }
+   }
+
+    function selectLeadersCallback(memberInfo) {
+          console.log('获取联系人选择器成功')
+          if (window.WebContainer && window.WebContainer.selectmembers) {
+            let persons = JSON.parse(memberInfo).result
+            console.log(persons)
+            selectLeadersSuccess(persons)
+          } else if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.selectmembers
+          ) {
+            let persons = memberInfo.result
+            console.log(persons)
+            selectLeadersSuccess(persons)
+          }
+   }
+
+   function getContactHeadImg(phoneStr) {
+     console.log('获取指定用户的头像')
+     console.log(phoneStr)
+     let param = {
+        backFunc: 'getContactHeadImgCallback',
+        backId: 'getContactHeadImgCallback',
+        phone: phoneStr
+      }
+
+      if (window.WebContainer && window.WebContainer.getContactAvatar) {
+        window.WebContainer.getContactAvatar(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.getContactAvatar
+      ) {
+        window.webkit.messageHandlers.getContactAvatar.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('getContactHeadImg failure')
+      }
+   }
+
+   function getContactHeadImgCallback(info) {
+    console.log('获取指定用户的头像成功')
+    let avatar = JSON.parse(info).avatar
+    getContactHeadImgSuccess(avatar)
+   }
+
+   function pushToContactManager(orgId) {
+     console.log('跳转联系管理员页面')
+     let param = {
+        orgid: orgId,
+      }
+      if (window.WebContainer && window.WebContainer.opencontractmanager) {
+        window.WebContainer.opencontractmanager(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.opencontractmanager
+      ) {
+        window.webkit.messageHandlers.opencontractmanager.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('pushToContactManager failure')
+      }
+   }
+
+   function loginBeginCallback() {
+     console.log('登录反馈--登录前准备成功')
+     let param = {
+        type: '1',
+        success: '1',
+        msg: '准备登录',
+        event: '13'
+     }
+     if (window.WebContainer && window.WebContainer.ybgLoginResultCallback) {
+        window.WebContainer.ybgLoginResultCallback(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.ybgLoginResultCallback
+      ) {
+        window.webkit.messageHandlers.ybgLoginResultCallback.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('beginLoginCallback failure')
+      }
+   }
+
+   function loginFailCallback(failMsg, failCode) {
+     console.log('登录反馈--登录失败')
+     let param = {
+        type: '0',
+        success: '0',
+        msg: failMsg,
+        event: '13'
+     }
+     if (failCode.length > 0) {
+       param = {
+        type: '0',
+        success: '0',
+        msg: failMsg,
+        event: '13',
+        errorCode: failCode
+       }
+     }
+     if (window.WebContainer && window.WebContainer.ybgLoginResultCallback) {
+        window.WebContainer.ybgLoginResultCallback(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.ybgLoginResultCallback
+      ) {
+        window.webkit.messageHandlers.ybgLoginResultCallback.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('beginLoginCallback failure')
+      }
+   }
+
+   function loginSuccessCallback() {
+     console.log('登录反馈--登录成功')
+     let param = {
+        type: '0',
+        success: '1',
+        event: '13'
+     }
+     if (window.WebContainer && window.WebContainer.ybgLoginResultCallback) {
+        window.WebContainer.ybgLoginResultCallback(JSON.stringify(param))
+      } else if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.ybgLoginResultCallback
+      ) {
+        window.webkit.messageHandlers.ybgLoginResultCallback.postMessage(param)
+      } else {
+        console.log('No native APIs found.')
+        console.log('beginLoginCallback failure')
+      }
+   }
 </script>
-
-<script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>
