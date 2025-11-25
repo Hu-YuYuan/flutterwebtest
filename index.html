@@ -5,36 +5,164 @@
   <script>
         this.globalThis || (this.globalThis = this)
   </script>
-  <script src="vconsole.min.js"></script>
-  <script>
-   var vConsole = new VConsole();
-  </script>
-  <script src="platform.js"></script>
   <script type="text/javascript">
-  let ua = navigator.userAgent.toLowerCase();
-  var ver = ua.match(/cpu iphone os (.*?) like mac os/);
-  console.log("打包时间：2023-11-28 11：45");
-  if(ver) {
-    if (ver[1].indexOf('15_0') != -1) {
-      console.log("当前的系统版本为iOS15.0.X");
-      window.flutterWebRenderer = "canvaskit";
-      HTMLCanvasElement.prototype.getContext = function (orig) {
-      return function(type) {
-      return type !== "webgl2" ? orig.apply(this, arguments) : null
-    }
-    }
-
-    (HTMLCanvasElement.prototype.getContext)
-    } else {
-      window.flutterWebRenderer = "html";
-      console.log("当前的系统版本并非iOS15.0.X");
-    }
-  }
+  var aMapHasInitial = 0;
+  console.log("打包时间：2025-10-14 15：30");
+  </script>
+  <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            serviceHost:window.location.origin+'/_AMapService',
+        }
   </script>
 </head>
 <body>
-<script src="main.dart.js?v=1.1.0" type="application/javascript"></script>
+<script src="main.dart.js?v=2.1.2" type="application/javascript"></script>
 <script>
+  // 动态添加第三方脚本
+  function addScript(url, callback) {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+
+    // 当脚本加载完成后执行回调函数
+    script.onload = function() {
+       callback();
+    };
+    // 将脚本添加到页面中
+    document.head.appendChild(script);
+  }
+
+  function loadAMapLibrary(param) {
+    var url = 'https://webapi.amap.com/maps?v=2.0&key=' + param + '&plugin=AMap.Geocoder';
+   addScript(url, function() {
+      console.log('AMapLibrary loaded with parameter: ' + param);
+      aMapHasInitial = 1;
+    });
+   }
+
+  function checkUseInYDBG() {
+    //判断是否在移动办公打开
+    let ua = navigator.userAgent.toLowerCase()
+    let checkiOSMatch = ua.match(/hbg/);
+    if (checkiOSMatch) {
+      checkIsInYDBGAppSuccess(true);
+    } else {
+      let checkAndroidMatch = ua.match(/appversion_(.*?).*/);
+      if (checkAndroidMatch) {
+        checkIsInYDBGAppSuccess(true);
+      } else {
+        checkIsInYDBGAppSuccess(false);
+      }
+    }
+  }
+
+  //获取设备id
+  function getCurrentDevice() {
+    console.log('通过句柄获取设备信息');
+    let param = {
+        backFunc: 'getCurrentDeviceCallback',
+        key: 'flutterPunchDeviceKey',
+    };
+    console.log(JSON.stringify(param));
+    if (window.WebContainer && window.WebContainer.getKeyValueInApp) {
+        window.WebContainer.getKeyValueInApp(JSON.stringify(param));
+    } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.getKeyValueInApp) {
+        window.webkit.messageHandlers.getKeyValueInApp.postMessage(param);
+    } else {
+        console.log('No native APIs found.');
+        console.log('getKeyValueInApp failure');
+        getCurrentDeviceSuccess('0000');
+    }
+  }
+
+  function getCurrentDeviceCallback(info) {
+     console.log('句柄获取用户的设备标识成功');
+     console.log(info);
+     if (window.WebContainer && window.WebContainer.getKeyValueInApp) {
+        let infoValue = JSON.parse(info).resultValue
+        getCurrentDeviceSuccess(infoValue);
+     } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.getKeyValueInApp) {
+        let infoValue = info.resultValue
+        getCurrentDeviceSuccess(infoValue);
+     } else {
+        getCurrentDeviceSuccess('0000');
+     }
+  }
+
+  //存设备id
+  function setCurrentDevice(deviceInfo) {
+    console.log('通过句柄存设备信息');
+    let param = {
+        value: deviceInfo,
+        key: 'flutterPunchDeviceKey'
+    };
+    console.log(JSON.stringify(param));
+    if (window.WebContainer && window.WebContainer.setKeyValueInApp) {
+        window.WebContainer.setKeyValueInApp(JSON.stringify(param));
+    } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.setKeyValueInApp) {
+        window.webkit.messageHandlers.setKeyValueInApp.postMessage(param);
+    } else {
+        console.log('No native APIs found.');
+        console.log('setKeyValueInApp failure');
+    }
+  }
+
+  function amapLocation() {
+    //高德定位
+    console.log('开始高德定位');
+    AMap.plugin('AMap.Geolocation', function() {
+        var geolocation = new AMap.Geolocation({
+            enableHighAccuracy: true,//是否使用高精度定位，默认:true
+            timeout: 15000,          //超过15秒后停止定位，默认：15s
+        });
+        geolocation.getCurrentPosition(function(status,result){
+            if(status=='complete'){
+                amapLocationComplete(result)
+            }else{
+                amapLocationOnError(result)
+            }
+        });
+    });
+  }
+
+  function amapLocationComplete(data) {
+    console.log(data.position.toString());
+    if (false == data.isConverted) {
+      getAmapLocationSuccess(data.position.toString(), true);
+    } else {
+      getAmapLocationSuccess(data.position.toString(), false);
+    }
+  }
+
+  function amapLocationOnError(data) {
+    console.log('高德定位失败，失败原因排查信息:'+data.message+'浏览器返回信息：'+data.originMessage);
+  }
+
+  function amapGetAddressWithLngLat(lngLatStr) {
+    if (aMapHasInitial == 0) {
+      console.log('高德SDK初始化中');
+      setTimeout(function() {
+        amapGetAddressWithLngLat(lngLatStr);
+      }, 100);
+      return;
+    }
+    var geocoder = new AMap.Geocoder({
+        radius: 100 //范围，默认：500
+    });
+    var lngLat  = lngLatStr.split(',');
+    geocoder.getAddress(lngLat, function(status, result) {
+      console.log(status);
+      console.log(result.regeocode.formattedAddress);
+      if (status === 'complete' && result.regeocode) {
+        var address = result.regeocode.formattedAddress;
+        amapGetAddressWithLngLatSuccess(address);
+      } else {
+        amapGetAddressWithLngLatSuccess('');
+      }
+     });
+  }
+
+
   function getAccessToken() {
       console.log('call getAccessToken')
       let param
@@ -150,13 +278,12 @@
           }
     }
 
-    function chooseReceiver(orgId) {
+    function getSelectMembers(orgId) {
           console.log('call getSelectMembers func')
           let param = {
-            backId: 'chooseReceiverCallback',
-            backFunc: 'chooseReceiverCallback',
-            orgid: orgId,
-            count: 1
+            backId: 'getSelectMembersCallback',
+            backFunc: 'getSelectMembersCallback',
+            orgid: orgId
           }
           if (window.WebContainer && window.WebContainer.selectmembers) {
             window.WebContainer.selectmembers(JSON.stringify(param))
@@ -168,71 +295,18 @@
       }
    }
 
-    function chooseReceiverCallback(memberInfo) {
+    function getSelectMembersCallback(memberInfo) {
           console.log('获取联系人选择器成功')
           if (window.WebContainer && window.WebContainer.selectmembers) {
             let persons = JSON.parse(memberInfo).result
-            chooseReceiverSuccess(persons)
+            getSelectMembersSuccess(persons)
           } else if (
             window.webkit &&
             window.webkit.messageHandlers &&
             window.webkit.messageHandlers.selectmembers
           ) {
             let persons = memberInfo.result
-            chooseReceiverSuccess(persons)
-          }
-   }
-
-   function chooseCheckers(orgId, userNameListStr, userMobileListStr, userUidListStr) {
-          console.log('call getSelectMembers func')
-          let param = {
-            backId: 'chooseCheckersCallback',
-            backFunc: 'chooseCheckersCallback',
-            orgid: orgId,
-            count: 10
-          }
-          if (userNameListStr.length > 0) {
-            let userNames = userNameListStr.split(',')
-            let userMobiles = userMobileListStr.split(',')
-            let userUids = userUidListStr.split(',')
-            var userInfos = []
-            for (i = 0; i < userMobiles.length; i ++) {
-              let userName = userNames[i]
-              let userMobile = userMobiles[i]
-              let userUid = userUids[i]
-              userInfos.push({name: userName, mobile: userMobile, uid: userUid})
-            }
-            param = {
-              backId: 'chooseCheckersCallback',
-              backFunc: 'chooseCheckersCallback',
-              orgid: orgId,
-              count: 10,
-              selected: userInfos
-             }
-          }
-          console.log(param)
-          if (window.WebContainer && window.WebContainer.selectmembers) {
-            window.WebContainer.selectmembers(JSON.stringify(param))
-          } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.selectmembers) {
-            window.webkit.messageHandlers.selectmembers.postMessage(param)
-          } else {
-            console.log('No native APIs found.')
-            console.log('getSelectMembers failure')
-      }
-   }
-
-    function chooseCheckersCallback(memberInfo) {
-          console.log('获取联系人选择器成功')
-          if (window.WebContainer && window.WebContainer.selectmembers) {
-            let persons = JSON.parse(memberInfo).result
-            chooseCheckersSuccess(persons)
-          } else if (
-            window.webkit &&
-            window.webkit.messageHandlers &&
-            window.webkit.messageHandlers.selectmembers
-          ) {
-            let persons = memberInfo.result
-            chooseCheckersSuccess(persons)
+            getSelectMembersSuccess(persons)
           }
    }
 
@@ -507,6 +581,63 @@
       } else {
         console.log('No native APIs found.')
         console.log('pushToContactManager failure')
+      }
+   }
+
+   function getCurrentLocation() {
+     console.log('获取用户当前经纬度')
+     let param = {
+        backId: 'getCurrentLocationCallback',
+        backFunc: 'getCurrentLocationCallback',
+     }
+     let isiPhoneDevice = 1
+<!--     var isiPhoneDevice = 0;-->
+<!--     let ua = navigator.userAgent.toLowerCase();-->
+<!--     var ver = ua.match(/cpu iphone os (.*?) like mac os/);-->
+<!--     if(ver) {-->
+<!--       isiPhoneDevice = 1-->
+<!--     }-->
+     if (1 == isiPhoneDevice) {
+        if (window.WebContainer && window.WebContainer.rcsNewGetCurrentLocation) {
+          window.WebContainer.rcsNewGetCurrentLocation(JSON.stringify(param))
+        } else if (
+          window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rcsNewGetCurrentLocation) {
+          window.webkit.messageHandlers.rcsNewGetCurrentLocation.postMessage(param)
+        } else if (navigator.WebContainer && navigator.WebContainer.rcsNewGetCurrentLocation) {
+          navigator.WebContainer.rcsNewGetCurrentLocation(JSON.stringify(param))
+        } else {
+          console.log('No native APIs found.')
+          console.log('getCurrentLocation failure')
+          console.log('调用定位句柄失败');
+          getAmapLocationWhenHandlerFail(1)
+        }
+     } else {
+        console.log('当前为安卓设备')
+        getAmapLocationWhenHandlerFail(0)
+     }
+   }
+
+   function getCurrentLocationCallback(locationInfo) {
+     console.log('获取定位成功')
+     console.log(locationInfo)
+     var needTransform = 0
+<!--     let ua = navigator.userAgent.toLowerCase();-->
+<!--     var ver = ua.match(/cpu iphone os (.*?) like mac os/);-->
+<!--     if(ver) {-->
+<!--       needTransform = 1-->
+<!--     }-->
+     if (window.WebContainer && window.WebContainer.rcsGetCurrentLocation) {
+        let lat = JSON.parse(locationInfo).latitude
+        let lng = JSON.parse(locationInfo).longitude
+        getCurrentLocationSuccess(lat, lng, needTransform)
+     } else if (window.webkit &&window.webkit.messageHandlers &&window.webkit.messageHandlers.rcsGetCurrentLocation) {
+        let lat = locationInfo.latitude
+        let lng = locationInfo.longitude
+        getCurrentLocationSuccess(lat, lng, needTransform)
+     } else if (navigator.WebContainer && navigator.WebContainer.rcsGetCurrentLocation) {
+        let lat = JSON.parse(locationInfo).latitude
+        let lng = JSON.parse(locationInfo).longitude
+        getCurrentLocationSuccess(lat, lng, needTransform)
       }
    }
 
