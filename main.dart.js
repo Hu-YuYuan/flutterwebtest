@@ -74587,7 +74587,7 @@ A.xk.prototype={
 aF(){return new A.LK(B.m)}}
 A.LK.prototype={
 aY(){this.bb()
-A.dH("TextCamera\u6d4b\u8bd5")
+A.dH("TextCamera\u6d4b\u8bd5123")
 var s=A.ajU(!0,null,!0,!0,null,null,!1)
 this.f=s
 s.Y(0,new A.a9d(this))
@@ -74625,7 +74625,7 @@ m=n.createElement("input")
 t.Zb.a(m)
 m.type="file"
 m.capture="camera"
-m.accept="image/*"
+m.accept="image/*;capture=camera"
 m.multiple=!1
 m.click()
 B.I9.a5y(m,"change",new A.a95(m,new A.bs(o,t.aR)))
